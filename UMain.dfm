@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 192
   Top = 125
-  Width = 1044
-  Height = 540
+  Width = 1188
+  Height = 672
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,22 +11,24 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object tablesPanel: TPanel
-    Left = 24
-    Top = 32
-    Width = 977
-    Height = 193
-    Caption = 'tablesPanel'
+  object restaurantPanel: TPanel
+    Left = 40
+    Top = 8
+    Width = 545
+    Height = 401
+    Caption = 'restaurantPanel'
     TabOrder = 0
   end
-  object requestsPanel: TPanel
-    Left = 24
-    Top = 280
-    Width = 977
-    Height = 201
-    Caption = 'requestsPanel'
+  object addLocalButton: TButton
+    Left = 608
+    Top = 176
+    Width = 75
+    Height = 25
+    Caption = 'Novo Local'
     TabOrder = 1
+    OnClick = addLocalButtonClick
   end
 end
