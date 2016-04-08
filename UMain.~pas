@@ -11,8 +11,12 @@ type
   TForm1 = class(TForm)
     restaurantPanel: TPanel;
     addLocalButton: TButton;
+    localScrollBox: TScrollBox;
+    localNameEdit: TEdit;
+    Button1: TButton;
     procedure addLocalButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -26,8 +30,10 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure insertTable(Sender: TObject);
 
   end;
+
 //========================= RESTAURANT CLASS =================================
 type
   TRestaurant = class
@@ -39,6 +45,16 @@ type
     localList: array[1..100] of TLocal;
     procedure insertLocalList();
   end;
+
+//======================== TABLE CLASS ======================================
+type
+  TTable = class(TShape)
+    private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
 var
   Form1: TForm1;
   already: Integer;
@@ -53,38 +69,42 @@ procedure TForm1.addLocalButtonClick(Sender: TObject);
 var
   local: TLocal;
 begin
-  local:= TLocal.Create(restaurantPanel);
-  local.Parent:= restaurantPanel;
-  local.Caption:= 'titulo';
+
+  local:= TLocal.Create(localScrollBox);
+  local.OnClick:= insertTable;
+  local.Parent:= localScrollBox;
+  local.Caption:= localNameEdit.Text;
   local.Height:= 185;
   local.Width:= 169;
 
   if (already = 0) then
   begin
     local.Top:= 15;
-    local.Left:= 10;
+    local.Left:= 15;
     precedentLocalTop:= local.Top;
     precedentLocalLeft:= local.Left;
 
     already:= 1;
   end
 
-  else if ( (precedentLocalLeft + local.Width + local.Left + 10) >= ((restaurantPanel.Width) - 30) ) then
+  else if ( (precedentLocalLeft + local.Width + local.Left + 15) >= ((localScrollBox.Width) - 30) ) then
   begin
     local.Top:= precedentLocalTop + local.Height;
-    local.Left:= 10;
+    local.Left:= 15;
     precedentLocalTop:= local.Top;
     precedentLocalLeft:= local.Left;
-    showMessage('ENTROU');
   end
 
   else
   begin
     local.Top:= precedentLocalTop;
-    local.Left:= (precedentLocalLeft + local.Width + 10);
+    local.Left:= (precedentLocalLeft + local.Width + 15);
     precedentLocalLeft:= local.Left;
     precedentLocalTop:= local.Top;
   end;
+
+  localNameEdit.Visible:= false;
+  addLocalButton.Visible:= false;
 
 end;
 
@@ -97,6 +117,22 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 begin
   already:= 0;
+  localNameEdit.Visible:= false;
+  addLocalButton.Visible:= false;
+end;
+
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  localNameEdit.Visible:= true;
+  addLocalButton.Visible:= true;
+end;
+
+{ TLocal }
+
+procedure TLocal.insertTable(Sender: TObject);
+begin
+  showMessage('OI');
 end;
 
 end.
