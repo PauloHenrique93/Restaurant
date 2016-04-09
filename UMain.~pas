@@ -36,6 +36,8 @@ type
     { Private declarations }
   public
     { Public declarations }
+    tableScrollBox: TScrollBox;
+    alreadyScrollTable: Integer;//garante que o scroll no local seja criado dinamicament uma vez
     procedure insertTable(Sender: TObject);
     constructor create(Sender:TComponent);override;
   end;
@@ -49,7 +51,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    localList: array[1..100] of TLocal;
+    localList: TList;
     procedure insertLocalList();
   end;
 
@@ -60,11 +62,15 @@ type
     { Private declarations }
   public
     { Public declarations }
+     constructor create(Sender:TComponent);override;
   end;
 
 var
   Form1: TForm1;
+  restaurant: TRestaurant;
   already: Integer;
+  localTop: Integer;
+  localSpace: Integer;
   precedentLocalTop: Integer;
   precedentLocalLeft: Integer;
 
@@ -80,13 +86,13 @@ begin
   local:= TLocal.Create(localScrollBox);
   local.Parent:= localScrollBox;
   local.Caption:= localNameEdit.Text;
-  //local.OnClick:= insertTable;
+  local.OnClick:= local.insertTable;
 
   //IMPRIMI O PRIMEIRO ELEMENTO GROUPBOX INSERIDO
   if (already = 0) then
   begin
-    local.Top:= 15;
-    local.Left:= 15;
+    local.Top:= localTop;
+    local.Left:= localSpace;
     precedentLocalTop:= local.Top;
     precedentLocalLeft:= local.Left;
 
@@ -94,10 +100,10 @@ begin
   end
 
   //IMPRIMI O PRIMEIRO ELEMENTO BROUPBOX DA LINHA ABAIXO
-  else if ( (precedentLocalLeft + local.Width + local.Left + 15) >= ((localScrollBox.Width) - 30) ) then
+  else if ( (precedentLocalLeft + local.Width + local.Left + localSpace) >= ((localScrollBox.Width) - 30) ) then
   begin
     local.Top:= precedentLocalTop + local.Height;
-    local.Left:= 15;
+    local.Left:= localSpace;
     precedentLocalTop:= local.Top;
     precedentLocalLeft:= local.Left;
   end
@@ -105,10 +111,12 @@ begin
   else
   begin
     local.Top:= precedentLocalTop;
-    local.Left:= (precedentLocalLeft + local.Width + 15);
+    local.Left:= (precedentLocalLeft + local.Width + localSpace);
     precedentLocalLeft:= local.Left;
     precedentLocalTop:= local.Top;
   end;
+
+ // restaurant.localList.Add(local);
 
   //reseta as propriedades de adicionar local
   localNameEdit.Visible:= false;
@@ -125,6 +133,9 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
+  restaurant:= TRestaurant.Create;
+  localTop:= 15;
+  localSpace:= 15;
   already:= 0;
   localNameEdit.Visible:= false;
   addLocalButton.Visible:= false;
@@ -144,12 +155,25 @@ begin
    inherited;
   Height:= 185;
   Width:= 169;
+  alreadyScrollTable:= 0;
 end;
 
 
 procedure TLocal.insertTable(Sender: TObject);
+var
+  table: TTable;
 begin
-  showMessage('FUNCIONOU !!');
+  // if (alreadyScrollTable = 0) then     aqui vai ser a verificação itens de localList
+   begin
+      tableScrollBox:= TScrollBox.Create((Sender as TGroupbox));
+      tableScrollBox.Parent:= (Sender as TGroupbox);
+      tableScrollBox.Width:= (Sender as TGroupbox).Width;
+      tableScrollBox.Height:= (Sender as TGroupbox).Height;
+   end;
+
+   table:= TTable.Create(tableScrollBox);
+   table.Parent:= (tableScrollBox);
+
 end;
 
 procedure TForm1.localNameEditKeyDown(Sender: TObject; var Key: Word;
@@ -157,6 +181,16 @@ procedure TForm1.localNameEditKeyDown(Sender: TObject; var Key: Word;
 begin
   if key = 13 then
   addLocalButton.Click;
+end;
+
+{ TTable }
+
+constructor TTable.create(Sender: TComponent);
+begin
+  inherited;
+  width:= 40;
+  height:= 40;
+  brush.Color:= Rgb(76,255,85);
 end;
 
 end.

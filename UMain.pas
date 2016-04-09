@@ -37,6 +37,8 @@ type
   public
     { Public declarations }
     tableScrollBox: TScrollBox;
+    index: Integer;
+    alreadyScrollTable: Integer;//garante que o scroll no local seja criado dinamicament uma vez
     procedure insertTable(Sender: TObject);
     constructor create(Sender:TComponent);override;
   end;
@@ -50,8 +52,8 @@ type
     { Private declarations }
   public
     { Public declarations }
-    localList: array[1..100] of TLocal;
-    procedure insertLocalList();
+    localList: TList;
+    procedure insertLocalList(local: TLocal);
   end;
 
 //======================== TABLE CLASS ======================================
@@ -66,12 +68,21 @@ type
 
 var
   Form1: TForm1;
+  restaurant: TRestaurant;
   already: Integer;
-  alreadyScrollTable;
+
   localTop: Integer;
   localSpace: Integer;
+
+  tableTop: Integer;
+  tableSpace: Integer;
+
   precedentLocalTop: Integer;
   precedentLocalLeft: Integer;
+
+  precedentTableTop: Integer;
+  precedentTableLeft: Integer;
+  localIndex: Integer;
 
 implementation
 
@@ -90,6 +101,7 @@ begin
   //IMPRIMI O PRIMEIRO ELEMENTO GROUPBOX INSERIDO
   if (already = 0) then
   begin
+
     local.Top:= localTop;
     local.Left:= localSpace;
     precedentLocalTop:= local.Top;
@@ -115,25 +127,40 @@ begin
     precedentLocalTop:= local.Top;
   end;
 
+  //--
+  local.index:= localIndex;
+  inc(localIndex);
+  local.alreadyScrollTable:= 0;
+  restaurant.insertLocalList(local);
+
   //reseta as propriedades de adicionar local
   localNameEdit.Visible:= false;
   addLocalButton.Visible:= false;
-  localNameEdit.Text:= '';
+  localNameEdit.Clear;
 
 end;
 
-procedure TRestaurant.insertLocalList();
+procedure TRestaurant.insertLocalList(local: TLocal);
 begin
+  localList.Add(local);
 end;
 
 
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
+  restaurant:= TRestaurant.Create;
+  restaurant.localList:= TList.Create;
+  localIndex:= 0;
+
   localTop:= 15;
   localSpace:= 15;
+
+  tableTop:= 15;
+  tableSpace:= 15;
+
   already:= 0;
-  alreadyScrollTable:= 0;
+
   localNameEdit.Visible:= false;
   addLocalButton.Visible:= false;
 end;
@@ -152,19 +179,25 @@ begin
    inherited;
   Height:= 185;
   Width:= 169;
+  alreadyScrollTable:= 0;
 end;
 
-
+//PAREI AQUI !!!!!!!!!!!!!!!!  resolver o problema de acesso ao atributo alreadyScrolllocal
 procedure TLocal.insertTable(Sender: TObject);
 var
   table: TTable;
+  local: TLocal;
 begin
-   if (alreadyScrollTable = 0) then
+  local:= restaurant.localList.Items[(Sender as TLocal).index];
+  if ( local.alreadyScrollTable = 0 ) then     //aqui vai ser a verificação itens de localList
    begin
       tableScrollBox:= TScrollBox.Create((Sender as TGroupbox));
       tableScrollBox.Parent:= (Sender as TGroupbox);
       tableScrollBox.Width:= (Sender as TGroupbox).Width;
       tableScrollBox.Height:= (Sender as TGroupbox).Height;
+
+      local.alreadyScrollTable:= 1;
+      restaurant.localList.Items[(Sender as TLocal).index]:= local;
    end;
 
    table:= TTable.Create(tableScrollBox);
