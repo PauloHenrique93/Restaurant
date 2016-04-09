@@ -6,6 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls;
 
+
+  
 //========================== TFORM1 CLASS =================================
 type
   TForm1 = class(TForm)
@@ -13,15 +15,19 @@ type
     addLocalButton: TButton;
     localScrollBox: TScrollBox;
     localNameEdit: TEdit;
-    Button1: TButton;
+    newLocalButton: TButton;
     procedure addLocalButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure newLocalButtonClick(Sender: TObject);
+    procedure localNameEditKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
+
+
 //=========================== LOCAL CLASS ===================================
 type
   TLocal = class(TGroupBox)
@@ -31,8 +37,9 @@ type
   public
     { Public declarations }
     procedure insertTable(Sender: TObject);
-
+    constructor create(Sender:TComponent);override;
   end;
+
 
 //========================= RESTAURANT CLASS =================================
 type
@@ -71,12 +78,11 @@ var
 begin
 
   local:= TLocal.Create(localScrollBox);
-  local.OnClick:= insertTable;
   local.Parent:= localScrollBox;
   local.Caption:= localNameEdit.Text;
-  local.Height:= 185;
-  local.Width:= 169;
+  //local.OnClick:= insertTable;
 
+  //IMPRIMI O PRIMEIRO ELEMENTO GROUPBOX INSERIDO
   if (already = 0) then
   begin
     local.Top:= 15;
@@ -87,6 +93,7 @@ begin
     already:= 1;
   end
 
+  //IMPRIMI O PRIMEIRO ELEMENTO BROUPBOX DA LINHA ABAIXO
   else if ( (precedentLocalLeft + local.Width + local.Left + 15) >= ((localScrollBox.Width) - 30) ) then
   begin
     local.Top:= precedentLocalTop + local.Height;
@@ -94,7 +101,7 @@ begin
     precedentLocalTop:= local.Top;
     precedentLocalLeft:= local.Left;
   end
-
+  //IMPRIMI O ELEMENTO GROUPBOX NA MESMA LINHA
   else
   begin
     local.Top:= precedentLocalTop;
@@ -103,8 +110,10 @@ begin
     precedentLocalTop:= local.Top;
   end;
 
+  //reseta as propriedades de adicionar local
   localNameEdit.Visible:= false;
   addLocalButton.Visible:= false;
+  localNameEdit.Text:= '';
 
 end;
 
@@ -122,7 +131,7 @@ begin
 end;
 
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.newLocalButtonClick(Sender: TObject);
 begin
   localNameEdit.Visible:= true;
   addLocalButton.Visible:= true;
@@ -130,9 +139,24 @@ end;
 
 { TLocal }
 
+constructor TLocal.create(Sender: TComponent);
+begin
+   inherited;
+  Height:= 185;
+  Width:= 169;
+end;
+
+
 procedure TLocal.insertTable(Sender: TObject);
 begin
-  showMessage('OI');
+  showMessage('FUNCIONOU !!');
+end;
+
+procedure TForm1.localNameEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key = 13 then
+  addLocalButton.Click;
 end;
 
 end.
